@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEET College Predictor · Round 3, 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A1A2C;
+    --ink-2:#122E45;
+    --paper:#F5F8F8;
+    --paper-2:#FFFFFF;
+    --teal:#0E9E93;
+    --teal-light:#5FD9C7;
+    --teal-dim:#CFEFEA;
+    --amber:#E39B33;
+    --coral:#E6614C;
+    --line:#DCE6E6;
+    --muted:#5C7176;
+    --font-display:'Fraunces', serif;
+    --font-body:'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.6;
+  }
+  a{color:inherit;}
+  img{max-width:100%;}
+
+  /* ---------- ECG waveform (signature motif) ---------- */
+  .ecg-strip{width:100%; height:46px; display:block;}
+  .ecg-path{
+    fill:none; stroke:var(--teal-light); stroke-width:2;
+    stroke-dasharray:1400; stroke-dashoffset:1400;
+    animation:ecg-draw 3.4s linear infinite;
+  }
+  @keyframes ecg-draw{
+    0%{stroke-dashoffset:1400;}
+    60%{stroke-dashoffset:0;}
+    100%{stroke-dashoffset:-1400;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ecg-path{animation:none; stroke-dashoffset:0;}
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,26,44,0.96);
+    color:#EAF3F2;
+    backdrop-filter:blur(6px);
+  }
+  .nav-wrap{
+    max-width:1180px; margin:0 auto; padding:0 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    height:66px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:19px; letter-spacing:.2px;}
+  .brand .pulse-dot{
+    width:9px; height:9px; border-radius:50%; background:var(--teal-light);
+    box-shadow:0 0 0 0 rgba(95,217,199,.7);
+    animation:pulse-dot 1.8s infinite;
+  }
+  @keyframes pulse-dot{
+    0%{box-shadow:0 0 0 0 rgba(95,217,199,.55);}
+    70%{box-shadow:0 0 0 9px rgba(95,217,199,0);}
+    100%{box-shadow:0 0 0 0 rgba(95,217,199,0);}
+  }
+  nav ul{list-style:none; display:flex; gap:30px; margin:0; padding:0; font-size:14.5px;}
+  nav a{text-decoration:none; color:#C7DAD9; cursor:pointer; transition:color .15s;}
+  nav a:hover, nav a.active{color:#fff;}
+  .nav-toggle{display:none; background:none; border:none; color:#fff; font-size:24px; cursor:pointer;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+    color:#EAF3F2;
+    padding:74px 24px 0;
+    overflow:hidden;
+  }
+  .hero-inner{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; padding-bottom:36px;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--teal-light); display:flex; align-items:center; gap:8px; margin-bottom:18px;
+  }
+  h1{
+    font-family:var(--font-display); font-weight:600; font-size:46px; line-height:1.08;
+    margin:0 0 20px; letter-spacing:-.01em;
+  }
+  h1 em{font-style:italic; color:var(--teal-light);}
+  .hero p.lede{font-size:17px; color:#C7DAD9; max-width:52ch; margin:0 0 30px;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font-body); font-weight:500; font-size:14.5px;
+    padding:13px 24px; border-radius:3px; border:1px solid transparent;
+    cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .12s ease, background .15s;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--teal-light); color:var(--ink);}
+  .btn-primary:hover{background:#7FE5D5;}
+  .btn-ghost{border-color:rgba(255,255,255,.28); color:#EAF3F2;}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.6);}
+
+  .hero-vitals{
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12);
+    border-radius:6px; padding:22px 22px 8px;
+  }
+  .hero-vitals .ecg-strip{margin-bottom:6px;}
+  .vital-row{display:flex; justify-content:space-between; padding:12px 0; border-top:1px solid rgba(255,255,255,.1); font-size:13.5px;}
+  .vital-row:first-of-type{border-top:none;}
+  .vital-row .label{color:#9FC0BE;}
+  .vital-row .value{font-family:var(--font-mono); color:#fff;}
+
+  .strip-divider{width:100%; overflow:hidden; line-height:0;}
+  .strip-divider svg{width:100%; height:40px; display:block;}
+
+  /* ---------- Sections ---------- */
+  section{padding:76px 24px;}
+  .container{max-width:1180px; margin:0 auto;}
+  .section-head{max-width:640px; margin-bottom:44px;}
+  .section-eyebrow{
+    font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--teal); margin-bottom:10px;
+  }
+  h2{font-family:var(--font-display); font-weight:600; font-size:32px; margin:0 0 12px; letter-spacing:-.01em;}
+  .section-head p{color:var(--muted); font-size:15.5px; margin:0;}
+
+  /* ---------- Predict form ---------- */
+  #predict{background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .predict-grid{display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:start;}
+  .chart-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:28px;
+  }
+  .field{margin-bottom:20px;}
+  .field label{display:block; font-size:13px; font-weight:500; color:var(--ink); margin-bottom:7px;}
+  .field .hint{font-size:12px; color:var(--muted); margin-top:6px; font-family:var(--font-mono);}
+  input[type="number"], select{
+    width:100%; padding:12px 14px; font-size:14.5px; font-family:var(--font-body);
+    border:1px solid var(--line); border-radius:4px; background:#fff; color:var(--ink);
+    appearance:none;
+  }
+  select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='%235C7176' d='M5 7l5 5 5-5z'/></svg>"); background-repeat:no-repeat; background-position:right 12px center;}
+  input:focus, select:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-dim);}
+  .gender-toggle{display:flex; gap:10px;}
+  .gender-toggle label{
+    flex:1; text-align:center; border:1px solid var(--line); border-radius:4px; padding:11px; font-size:14px;
+    cursor:pointer; color:var(--muted); background:#fff;
+  }
+  .gender-toggle input{display:none;}
+  .gender-toggle input:checked + span{color:var(--teal); font-weight:500;}
+  .gender-toggle label:has(input:checked){border-color:var(--teal); background:var(--teal-dim);}
+
+  .rank-scale{margin-top:8px; position:relative; height:6px; background:var(--line); border-radius:3px;}
+  .rank-scale .fill{position:absolute; left:0; top:0; height:100%; background:var(--teal-light); border-radius:3px; width:0%; transition:width .25s;}
+  .rank-scale .marker{
+    position:absolute; top:-5px; width:16px; height:16px; border-radius:50%; background:var(--teal);
+    border:2px solid #fff; box-shadow:0 0 0 1px var(--teal); transform:translateX(-50%); left:0%; transition:left .25s;
+  }
+  .rank-labels{display:flex; justify-content:space-between; font-size:11px; font-family:var(--font-mono); color:var(--muted); margin-top:6px;}
+
+  /* Results panel */
+  .results-card{
+    background:var(--ink); color:#EAF3F2; border-radius:6px; padding:28px; min-height:340px;
+    position:relative;
+  }
+  .results-card .empty-state{color:#8FADAB; font-size:14px; text-align:center; padding:70px 20px;}
+  .results-card .empty-state i{display:block; font-size:13px; font-family:var(--font-mono); margin-bottom:10px; color:var(--teal-light);}
+  .result-header{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:18px; border-bottom:1px solid rgba(255,255,255,.14); padding-bottom:14px;}
+  .result-header .top-label{font-size:12px; font-family:var(--font-mono); color:#9FC0BE; text-transform:uppercase; letter-spacing:.06em;}
+  .result-header .model-tag{font-size:11.5px; font-family:var(--font-mono); color:var(--teal-light);}
+  .top-pick{margin-bottom:22px;}
+  .top-pick .college{font-family:var(--font-display); font-size:24px; font-weight:600; line-height:1.2;}
+  .top-pick .prob{font-family:var(--font-mono); color:var(--teal-light); font-size:14px; margin-top:4px;}
+  .bar-row{margin-bottom:13px;}
+  .bar-row .bar-label{display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px; color:#D7E7E5;}
+  .bar-row .bar-pct{font-family:var(--font-mono); color:var(--teal-light);}
+  .bar-track{height:8px; background:rgba(255,255,255,.1); border-radius:4px; overflow:hidden;}
+  .bar-fill{height:100%; background:linear-gradient(90deg, var(--teal), var(--teal-light)); border-radius:4px; width:0%; transition:width .5s ease;}
+  .warning-box{
+    margin-top:18px; padding:12px 14px; background:rgba(230,97,76,.15); border:1px solid rgba(230,97,76,.4);
+    border-radius:4px; font-size:12.5px; color:#F7C9C0;
+  }
+  .disclaimer{margin-top:16px; font-size:11.5px; color:#7F9C99; line-height:1.5;}
+  .loading-pulse{display:flex; align-items:center; justify-content:center; gap:10px; padding:80px 0; color:var(--teal-light); font-family:var(--font-mono); font-size:13px;}
+  .loading-pulse svg{width:80px; height:24px;}
+
+  /* ---------- Stats ---------- */
+  #stats{background:var(--paper);}
+  .stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:40px;}
+  .stat-card{background:var(--paper-2); border:1px solid var(--line); border-radius:6px; padding:22px;}
+  .stat-card .num{font-family:var(--font-mono); font-size:30px; font-weight:500; color:var(--ink);}
+  .stat-card .lbl{font-size:12.5px; color:var(--muted); margin-top:6px;}
+  .stat-card.accent .num{color:var(--teal);}
+
+  table.compare{width:100%; border-collapse:collapse; font-size:13.5px; background:var(--paper-2); border:1px solid var(--line); border-radius:6px; overflow:hidden;}
+  table.compare th, table.compare td{padding:12px 16px; text-align:left; border-bottom:1px solid var(--line);}
+  table.compare th{background:var(--ink); color:#EAF3F2; font-weight:500; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;}
+  table.compare td{font-family:var(--font-mono);}
+  table.compare tr:last-child td{border-bottom:none;}
+  table.compare tr.best td{background:var(--teal-dim);}
+  .table-note{font-size:12px; color:var(--muted); margin-top:12px; font-style:italic;}
+
+  /* ---------- About ---------- */
+  #about{background:var(--paper-2); border-top:1px solid var(--line);}
+  .about-grid{display:grid; grid-template-columns:220px 1fr; gap:48px;}
+  .about-toc{position:sticky; top:90px; align-self:start;}
+  .about-toc a{display:block; font-size:13.5px; color:var(--muted); padding:8px 0 8px 14px; border-left:2px solid var(--line); text-decoration:none;}
+  .about-toc a:hover, .about-toc a.active{color:var(--teal); border-left-color:var(--teal);}
+  .about-body h3{font-family:var(--font-display); font-size:21px; font-weight:600; margin:0 0 12px;}
+  .about-body h4{font-size:15px; font-weight:600; margin:26px 0 8px;}
+  .about-body p{color:#33484C; font-size:15px; margin:0 0 14px;}
+  .about-body ul{color:#33484C; font-size:15px; padding-left:20px; margin:0 0 14px;}
+  .about-body li{margin-bottom:6px;}
+  .about-section{margin-bottom:46px; padding-bottom:6px;}
+  .about-section:not(:last-child){border-bottom:1px solid var(--line); padding-bottom:40px;}
+  .callout{
+    background:var(--teal-dim); border-left:3px solid var(--teal); padding:16px 18px; border-radius:0 4px 4px 0;
+    font-size:14px; color:var(--ink-2); margin:16px 0;
+  }
+  .callout.warn{background:#FBE9E4; border-left-color:var(--coral); color:#7A2E1F;}
+  .pill-row{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+  .pill{
+    font-family:var(--font-mono); font-size:12px; background:var(--ink); color:#EAF3F2; padding:6px 12px; border-radius:20px;
+  }
+  code{font-family:var(--font-mono); background:var(--teal-dim); padding:1px 6px; border-radius:3px; font-size:13px;}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--ink); color:#8FADAB; padding:40px 24px; font-size:13px;}
+  .footer-inner{max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px){
+    .hero-inner{grid-template-columns:1fr;}
+    .predict-grid{grid-template-columns:1fr;}
+    .about-grid{grid-template-columns:1fr;}
+    .about-toc{position:static; display:flex; overflow-x:auto; gap:6px; margin-bottom:28px;}
+    .about-toc a{border-left:none; border-bottom:2px solid var(--line); white-space:nowrap; padding:8px 12px;}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    nav ul{display:none;}
+    .nav-toggle{display:block;}
+    h1{font-size:34px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-wrap">
+    <div class="brand"><span class="pulse-dot"></span>NEET&nbsp;College&nbsp;Predictor</div>
+    <nav><ul>
+      <li><a href="#predict" class="nav-link">Predict</a></li>
+      <li><a href="#stats" class="nav-link">Model stats</a></li>
+      <li><a href="#about" class="nav-link">About</a></li>
+    </ul></nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow"><span>&#9679;</span> NEET UG 2025 · Round 3 Allotment Data</div>
+      <h1>Predict your <em>likely</em> college.<br>Not a promise &mdash; a probability.</h1>
+      <p class="lede">Trained on 29,165 real Round-3 MBBS/BDS allotment records from NEET UG 2025. Enter your AIR, gender and category to see the colleges the data says you're most likely to land, ranked by probability.</p>
+      <div class="hero-ctas">
+        <a href="#predict" class="btn btn-primary">Predict my college &rarr;</a>
+        <a href="#about" class="btn btn-ghost">Read the methodology</a>
+      </div>
+    </div>
+    <div class="hero-vitals">
+      <svg class="ecg-strip" viewBox="0 0 400 46" preserveAspectRatio="none">
+        <path class="ecg-path" d="M0,23 L60,23 L75,23 L85,6 L95,40 L105,23 L140,23 L150,10 L160,23 L400,23"/>
+      </svg>
+      <div class="vital-row"><span class="label">Records analyzed</span><span class="value">29,165</span></div>
+      <div class="vital-row"><span class="label">Candidate colleges (classes)</span><span class="value" id="heroClasses">100</span></div>
+      <div class="vital-row"><span class="label">Best legitimate model</span><span class="value" id="heroModel">&hellip;</span></div>
+      <div class="vital-row"><span class="label">Top-3 accuracy</span><span class="value" id="heroTop3">&hellip;</span></div>
+    </div>
+  </div>
+  <div class="strip-divider">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 L1200,20" stroke="rgba(255,255,255,.12)" stroke-width="1"/></svg>
+  </div>
+</section>
+
+<section id="predict">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">Prediction engine</div>
+      <h2>Enter your details</h2>
+      <p>Three inputs, the same three the trained model actually uses &mdash; no fields it can't use are collected.</p>
+    </div>
+
+    <div class="predict-grid">
+      <div class="chart-card">
+        <form id="predictForm">
+          <div class="field">
+            <label for="airInput">All India Rank (AIR)</label>
+            <input type="number" id="airInput" min="1" placeholder="e.g. 4200" required>
+            <div class="rank-scale"><div class="fill" id="rankFill"></div><div class="marker" id="rankMarker"></div></div>
+            <div class="rank-labels"><span id="rankMin">1</span><span id="rankMax">&hellip;</span></div>
+          </div>
+
+          <div class="field">
+            <label>Gender</label>
+            <div class="gender-toggle">
+              <label><input type="radio" name="gender" value="M" checked><span>Male</span></label>
+              <label><input type="radio" name="gender" value="F"><span>Female</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="categoryInput">Category / Quota</label>
+            <select id="categoryInput" required>
+              <option value="">Loading categories&hellip;</option>
+            </select>
+            <div class="hint">Grouped exactly as the model was trained &mdash; rare combinations were bucketed into OTHER.</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Run prediction &rarr;</button>
+        </form>
+      </div>
+
+      <div class="results-card" id="resultsCard">
+        <div class="empty-state">
+          <i>&#9679; awaiting input</i>
+          Fill in the form and run a prediction to see the top likely colleges, ranked by the model's probability estimate.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stats">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">Transparency</div>
+      <h2>How good is this model, honestly?</h2>
+      <p>Live numbers from the model actually loaded on this server, plus the full five-model comparison from the training notebook for context.</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card accent"><div class="num" id="statAcc">&hellip;</div><div class="lbl">Accuracy (exact college)</div></div>
+      <div class="stat-card accent"><div class="num" id="statTop3">&hellip;</div><div class="lbl">Top-3 accuracy</div></div>
+      <div class="stat-card"><div class="num" id="statClasses">&hellip;</div><div class="lbl">Colleges / outcome classes</div></div>
+      <div class="stat-card"><div class="num" id="statRows">&hellip;</div><div class="lbl">Training rows used</div></div>
+    </div>
+
+    <table class="compare">
+      <thead><tr><th>Model</th><th>Accuracy</th><th>Top-3 accuracy</th><th>Macro F1</th><th>Weighted F1</th></tr></thead>
+      <tbody id="compareBody">
+        <tr class="best"><td>Random Forest</td><td>0.6666</td><td>0.7773</td><td>0.1823</td><td>0.6420</td></tr>
+        <tr><td>XGBoost</td><td>0.6662</td><td>0.7785</td><td>0.1777</td><td>0.6466</td></tr>
+        <tr><td>Decision Tree (baseline)</td><td>0.6530</td><td>0.7392</td><td>0.1548</td><td>0.6347</td></tr>
+        <tr><td>CatBoost</td><td>0.6414</td><td>0.7360</td><td>0.1102</td><td>0.5928</td></tr>
+        <tr><td>LightGBM</td><td>0.3983</td><td>0.4055</td><td>0.0057</td><td>0.3408</td></tr>
+      </tbody>
+    </table>
+    <p class="table-note">Figures above are from the notebook's reference training run and illustrate relative model performance &mdash; the four stat cards above reflect the exact model file (<code>neet_college_predictor.pkl</code>) currently loaded by this server, which may differ slightly run to run.</p>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container about-grid">
+    <div class="about-toc">
+      <a href="#about-why" class="toc-link">Why this exists</a>
+      <a href="#about-what" class="toc-link">What it predicts from</a>
+      <a href="#about-how" class="toc-link">How the model was built</a>
+      <a href="#about-honesty" class="toc-link">Honest accuracy note</a>
+      <a href="#about-stack" class="toc-link">Tech stack</a>
+    </div>
+
+    <div class="about-body">
+      <div class="section-eyebrow">Documentation</div>
+      <h2 style="margin-bottom:36px;">About this project</h2>
+
+      <div class="about-section" id="about-why">
+        <h3>Why this exists</h3>
+        <p>Every year, more than 20 lakh students appear for the NEET-UG examination to compete for a limited number of medical seats across India. Choosing the right college during counseling is genuinely hard: allotment depends on NEET score, category, quota, state eligibility, rank, and previous years' cutoff trends, and most students end up piecing this together from manual research, counseling agents, or scattered forum posts.</p>
+        <p>The objective of this project is to build a machine-learning-based NEET College Prediction System that estimates the most likely medical college for a student, based on their NEET rank and reservation category, trained on real NEET UG 2025 Round-3 college allotment data &mdash; so students get a data-driven starting point during counseling instead of guesswork.</p>
+      </div>
+
+      <div class="about-section" id="about-what">
+        <h3>What it predicts from</h3>
+        <p>The system takes three student-facing inputs and returns a ranked, probability-scored list of likely colleges:</p>
+        <div class="pill-row">
+          <span class="pill">AIR (All India Rank)</span>
+          <span class="pill">Gender</span>
+          <span class="pill">Category / Quota</span>
+        </div>
+        <p>These are the only three fields in the source dataset that are legitimately predictive and available before counseling &mdash; identifying fields (name, roll number, form number) were dropped as PII with zero predictive value, and two columns (<code>College Code</code>, <code>Remark</code>) were deliberately excluded from training because they are near-duplicates of the answer itself (see the honesty note below).</p>
+      </div>
+
+      <div class="about-section" id="about-how">
+        <h3>How the model was built</h3>
+        <h4>Dataset</h4>
+        <p><code>NEET_2025_MBBS_BDS_Round3_SelectionList.xlsx</code> &mdash; 29,165 candidate rows with columns for AIR, Gender, Category/Quota, College Code, College Name &amp; Status, and Remark.</p>
+        <h4>Cleaning</h4>
+        <ul>
+          <li>Standardised Gender and Category/Quota text (trim + uppercase).</li>
+          <li>Repaired truncated college-name strings (unclosed brackets from the raw export).</li>
+          <li>Dropped PII columns (Name, NEET Roll No, CET Form No, Sr.No) &mdash; unique identifiers with no predictive signal.</li>
+        </ul>
+        <h4>Building the target</h4>
+        <p>The raw <code>College Name &amp; Status</code> field mixes the college name with a round-status suffix, e.g. <code>GSMC MUMBAI(Ret.)</code> vs <code>GSMC MUMBAI(No Pref)</code>. The status suffix was stripped so the model predicts the college itself (98 distinct colleges), and two additional outcome classes were added for candidates who weren't allotted a seat in this round &mdash; <code>NOT_ALLOTTED</code> and <code>DISQUALIFIED</code> &mdash; giving <strong>100 total outcome classes</strong> and using 100% of the rows, with nothing dropped for a missing target.</p>
+        <h4>Feature engineering</h4>
+        <p>Category/Quota had 404 raw distinct strings after cleaning; categories occurring fewer than 30 times were grouped into an <code>OTHER</code> bucket (404 &rarr; ~76 groups), then frequency-encoded. Gender was binary-encoded. No scaling was applied, since every model tested is tree-based and scale-invariant.</p>
+        <h4>Models compared</h4>
+        <p>Decision Tree, Random Forest, XGBoost, LightGBM and CatBoost were each trained independently (no pipeline wrapper) on an 80/20 stratified split, and evaluated on Accuracy, Top-3 Accuracy, Macro F1 and Weighted F1 &mdash; Macro F1 in particular, since with 100 imbalanced classes accuracy alone is misleading. See the live comparison table above.</p>
+      </div>
+
+      <div class="about-section" id="about-honesty">
+        <h3>Honest accuracy note</h3>
+        <p>This is the part most prediction tools don't tell you, so we're putting it front and center.</p>
+        <div class="callout warn">
+          <strong>This model will not hit 90&ndash;92% accuracy, and it shouldn't.</strong> Real counseling allotment is driven by a candidate's rank, category, <em>and</em> the ordered list of college preferences they filled, weighed against how many seats were still open that round. This dataset contains rank, category and gender &mdash; but not preference order or the live seat matrix. Two candidates with an identical rank and category can land in different colleges purely because they filled different preference lists. No model can recover information that was never in the data.
+        </div>
+        <p>Some context that makes the ~66% Accuracy / ~78% Top-3 Accuracy numbers meaningful rather than disappointing:</p>
+        <ul>
+          <li>A trivial baseline that always predicts <code>NOT_ALLOTTED</code> already scores about 61.8%, because that genuinely is the majority outcome in Round 3. The best model here is only a few points above that floor &mdash; a real but modest signal.</li>
+          <li>Feeding <code>College Code</code> back in as a feature pushes accuracy far higher artificially &mdash; but that's not a real prediction. <code>College Code</code> and <code>College Name</code> are two labels for the same seat, so the model would just be memorising the answer key. This was tested and shown in the notebook purely to demonstrate the leakage, not as a number to ship.</li>
+          <li>If you need materially higher accuracy, the honest fix is more relevant data &mdash; previous-round cutoff ranks per college/category, the seat matrix per round, and ideally the candidate's own choice list &mdash; not a different algorithm.</li>
+        </ul>
+        <div class="callout">Treat every prediction on this site as a probability-ranked shortlist to research further, not a guarantee of your Round-3 outcome.</div>
+      </div>
+
+      <div class="about-section" id="about-stack" style="border-bottom:none;">
+        <h3>Tech stack</h3>
+        <div class="pill-row">
+          <span class="pill">pandas / numpy</span>
+          <span class="pill">scikit-learn</span>
+          <span class="pill">XGBoost</span>
+          <span class="pill">LightGBM</span>
+          <span class="pill">CatBoost</span>
+          <span class="pill">Flask</span>
+          <span class="pill">joblib</span>
+          <span class="pill">AWS EC2</span>
+        </div>
+        <p>Model selection, training and the pickle export happen in <code>NEET_College_Prediction.ipynb</code>. <code>app.py</code> loads the exported model bundle once at startup and serves this page plus a small JSON prediction API; no retraining happens on request, so predictions return in well under a second.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>NEET College Predictor &middot; built on NEET UG 2025 Round-3 allotment data</div>
+    <div>Educational project &middot; not affiliated with MCC or NTA &middot; predictions are probability estimates, not guarantees</div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  document.getElementById('navToggle').addEventListener('click', () => {
+    const ul = document.querySelector('nav ul');
+    ul.style.display = ul.style.display === 'flex' ? 'none' : 'flex';
+    ul.style.flexDirection = 'column';
+    ul.style.position = 'absolute';
+    ul.style.top = '66px'; ul.style.right = '24px';
+    ul.style.background = 'var(--ink)'; ul.style.padding = '16px 20px'; ul.style.borderRadius = '6px';
+  });
+
+  let META = null;
+
+  async function loadMeta(){
+    try{
+      const res = await fetch('/api/meta');
+      META = await res.json();
+
+      document.getElementById('heroClasses').textContent = META.n_classes;
+      document.getElementById('heroModel').textContent = META.model_name;
+      document.getElementById('heroTop3').textContent = (META.top3_accuracy*100).toFixed(1) + '%';
+
+      document.getElementById('statAcc').textContent = (META.accuracy*100).toFixed(1) + '%';
+      document.getElementById('statTop3').textContent = (META.top3_accuracy*100).toFixed(1) + '%';
+      document.getElementById('statClasses').textContent = META.n_classes;
+      document.getElementById('statRows').textContent = META.trained_rows.toLocaleString();
+
+      document.getElementById('rankMax').textContent = META.max_air.toLocaleString();
+      document.getElementById('airInput').max = META.max_air * 2;
+
+      const sel = document.getElementById('categoryInput');
+      sel.innerHTML = '';
+      META.category_options.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        sel.appendChild(opt);
+      });
+    }catch(err){
+      document.getElementById('heroModel').textContent = 'unavailable';
+      const sel = document.getElementById('categoryInput');
+      sel.innerHTML = '<option value="">Could not load &mdash; is app.py running?</option>';
+    }
+  }
+  loadMeta();
+
+  // Rank scale marker
+  document.getElementById('airInput').addEventListener('input', (e) => {
+    if(!META) return;
+    const val = Number(e.target.value) || 0;
+    const pct = Math.max(0, Math.min(100, (val / META.max_air) * 100));
+    document.getElementById('rankFill').style.width = pct + '%';
+    document.getElementById('rankMarker').style.left = pct + '%';
+  });
+
+  // Prediction submit
+  const resultsCard = document.getElementById('resultsCard');
+  document.getElementById('predictForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const air = document.getElementById('airInput').value;
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+    const category = document.getElementById('categoryInput').value;
+
+    resultsCard.innerHTML = `<div class="loading-pulse">
+      <svg viewBox="0 0 200 46"><path class="ecg-path" style="stroke:#5FD9C7" d="M0,23 L60,23 L75,23 L85,6 L95,40 L105,23 L140,23 L150,10 L160,23 L200,23"/></svg>
+      running prediction&hellip;
+    </div>`;
+
+    try{
+      const res = await fetch('/api/predict', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({air, gender, category})
+      });
+      const data = await res.json();
+
+      if(!res.ok){
+        resultsCard.innerHTML = `<div class="warning-box" style="margin-top:0;">${data.error || 'Something went wrong. Please check your inputs.'}</div>`;
+        return;
+      }
+
+      const top = data.predictions[0];
+      let barsHtml = '';
+      data.predictions.forEach(p => {
+        barsHtml += `<div class="bar-row">
+          <div class="bar-label"><span>${p.college}</span><span class="bar-pct">${(p.probability*100).toFixed(1)}%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(p.probability*100).toFixed(1)}%"></div></div>
+        </div>`;
+      });
+
+      resultsCard.innerHTML = `
+        <div class="result-header">
+          <span class="top-label">Prediction result</span>
+          <span class="model-tag">${data.model_used}</span>
+        </div>
+        <div class="top-pick">
+          <div class="college">${top.college}</div>
+          <div class="prob">most likely &middot; ${(top.probability*100).toFixed(1)}% probability</div>
+        </div>
+        ${barsHtml}
+        ${data.out_of_range_warning ? '<div class="warning-box">This AIR is well outside the rank range seen in training &mdash; treat this prediction with extra caution.</div>' : ''}
+        <div class="disclaimer">This is a probability estimate from a model trained on rank, gender and category alone &mdash; it does not know your preference list or this round's live seat matrix. See the About section for why that caps achievable accuracy at roughly 66%.</div>
+      `;
+
+      // animate bar fills in on next frame
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = el.style.width; });
+      });
+    }catch(err){
+      resultsCard.innerHTML = `<div class="warning-box" style="margin-top:0;">Could not reach the prediction server. Make sure app.py is running.</div>`;
+    }
+  });
+
+  // Scroll-spy for nav + about TOC
+  const sections = ['predict','stats','about'].map(id => document.getElementById(id));
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => { if(window.scrollY >= sec.offsetTop - 100) current = sec.id; });
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+current));
+  });
+</script>
+
+</body>
+</html>
